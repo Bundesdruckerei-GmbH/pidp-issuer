@@ -1,0 +1,28 @@
+/**
+ * Copyright 2024-2026 Bundesdruckerei GmbH
+ * For the license see the accompanying file LICENSE.MD.
+ */
+
+.burgerbar {
+    width: 15px;
+    height: 2px;
+    border-top: 2px solid #000;
+    margin-top: 2px;
+    display: block;
+}
+
+.headline-with-badge-and-dates > .headline {
+    display: flex;
+    align-items: center;
+    column-gap: 0.6rem;
+}
+
+.headline-with-badge-and-dates > .headline > .badge {
+    min-width: 5rem;
+}
+
+.headline-with-badge-and-dates > .dates {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+}

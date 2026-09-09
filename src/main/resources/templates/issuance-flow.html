@@ -1,0 +1,109 @@
+<!--
+
+    Copyright 2024-2025 Bundesdruckerei GmbH
+    For the license see the accompanying file LICENSE.MD.
+
+-->
+<!DOCTYPE html>
+<html th:replace="~{layout :: main(~{::title}, ~{::#content})}" xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>PID issuance flow</title>
+</head>
+<body>
+<main>
+    <div id="content" class="container mt-2" style="max-width: 40rem;">
+        <h1>PID issuance flow</h1>
+        <h2>Issuance protocol</h2>
+        <ul>
+            <li>The issuer URI to use as base for metadata fetching is
+                "<span th:text="${baseUrl}" />". The <a
+                        th:href="@{./.well-known/openid-credential-issuer}">issuer metadata</a> contains the information
+                required to
+                <strong>construct</strong> the initial authorization request sent by the wallet to start the issuance.
+            </li>
+            <li>
+                <a href="https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html" rel="noopener">OpenID for
+                    Verifiable Credential Issuance 1.0</a> is followed.
+            </li>
+            <li>
+                Issuance is performed using the authorization code flow with scope parameter and can be initiated by the
+                wallet.
+            </li>
+            <li>
+                The use of <a href="https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html" rel="noopener">Pushed
+                Authorization Requests</a> is <strong>required</strong>.
+            </li>
+            <li>
+                The use of <a href="https://www.rfc-editor.org/rfc/rfc7636" rel="noopener">PKCE</a> is <strong>required</strong>.
+            </li>
+            <li>
+                The use of <a href="https://datatracker.ietf.org/doc/draft-ietf-oauth-attestation-based-client-auth/07/" rel="noopener">
+                Client Attestation</a> is <strong>required</strong>.
+            </li>
+            <li>
+                The use of <a href="https://datatracker.ietf.org/doc/html/rfc9449" rel="noopener">DPoP</a> is <strong>required</strong>.
+            </li>
+            <li>
+                Key attestation at the token endpoint, as described in the
+                <a href="https://bmi.usercontent.opencode.de/eudi-wallet/wallet-development-documentation-public/architecture-concept/flows/21-pid-issuance/#detailed-description">
+                    wallet-development-documentation part 29-31</a> is currently optional.
+            </li>
+            <li>
+                Issuance will happen at the credential endpoint, which supports single or batch issuance through the use
+                of the proof or proofs parameter as specified in <a
+                    href="https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0-15.html#name-credential-request" rel="noopener">OpenID for
+                Verifiable Credential Issuance (Draft 15)</a>.
+            </li>
+            <li>
+                Proof Type <strong>jwt</strong> (without key attestation) and <strong>attestation</strong> are supported.
+            </li>
+            <li>
+                Deferred issuance and the notification endpoint are <strong>not</strong> supported.
+            </li>
+            <li>
+                The token endpoint issues a refresh token, which can be used at a later point in time to receive a new
+                access token from the token endpoint. This access token can then be used to request fresh credentials
+                from the credential endpoint.<br><br>
+                <strong>The refresh token is bound to the key that is used for the DPoP header</strong> of the token
+                request containing the authorization code. The refresh token can only be used in token requests that
+                have a DPoP header with the same key that was bound to the refresh token.
+            </li>
+            <li>
+                Credentials can be issued using the provided test eID cards.
+            </li>
+        </ul>
+
+<!--        temporarily disabled, may be used again later-->
+        <h2 hidden="hidden">Credential offer</h2>
+        <div hidden="hidden" id="credentialOffer" class="container mt-2" style="max-width: 40rem;">
+            <p>It is intended, that the wallet initiates the issuance by sending an authorization request directly to
+                the issuer. For convenience the following credential offer can be used to start issuer initiated
+                issuance if supported by the wallet. It will use the scheme
+                "openid-credential-offer".</p>
+            <table class="table">
+                <tr>
+                    <th><a href="./sdjwt">SD-JWT</a></th>
+                    <th><a href="./msomdoc">MSO mdoc</a></th>
+                </tr>
+                <tr>
+                    <td>
+                        You can <br>
+                        <a class="btn btn-primary" th:href="${sdJwtUri}" rel="noopener">open the wallet on the current device</a><br>
+                        or use this qr code<br>
+                        <img th:src="${sdJwtQr}" alt="QR-Code"/><br>
+                        to use a wallet on another device.
+                    </td>
+                    <td>
+                        You can <br>
+                        <a class="btn btn-primary" th:href="${msoMdocUri}" rel="noopener">open the wallet on the current device</a><br>
+                        or use this qr code<br>
+                        <img th:src="${msoMdocQr}" alt="QR-Code"/><br>
+                        to use a wallet on another device.
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</main>
+</body>
+</html>

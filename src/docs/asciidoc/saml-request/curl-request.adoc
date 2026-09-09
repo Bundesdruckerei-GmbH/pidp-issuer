@@ -1,0 +1,9 @@
+////
+  // Copyright 2024-2026 Bundesdruckerei GmbH
+  // For the license see the accompanying file LICENSE.MD.
+////
+
+[source,bash]
+----
+$ curl 'http://localhost:8084/authorize?client_id=152e7566-b336-11f0-9e91-00155d50d2a8&request_uri%3Durn%3Aietf%3Aparams%3Aoauth%3Arequest_uri%3AHMiFh5xiC72IDmeFEUYerH' -i -X GET
+----

@@ -1,0 +1,447 @@
+////
+  // Copyright 2024-2026 Bundesdruckerei GmbH
+  // For the license see the accompanying file LICENSE.MD.
+////
+
+= PID-Provider documentation
+:favicon: ../favicon.png
+:webfonts!:
+:sectnums:
+:sectnumlevels: 4
+:sectanchors:
+:source-highlighter: rouge
+:toc: left
+:toclevels: 3
+:description: This document describes the pid issuer implementation(s), providing request and response examples.
+:duplicate-headers-text: Note that all request and curl examples contain duplicate Content-Type headers, but this doesn't affect the results.
+
+{description}
+
+== Authorization
+
+=== First-time issuance
+
+==== Challenge
+.Call with curl:
+include::{snippets}/sdjwt/challenge/curl-request.adoc[]
+.Request:
+include::{snippets}/sdjwt/challenge/http-request.adoc[]
+.Response:
+include::{snippets}/sdjwt/challenge/http-response.adoc[]
+
+==== PAR
+.Call with curl: footnote:fn-duplicate-headers[{duplicate-headers-text}]
+include::{snippets}/sdjwt/par/curl-request.adoc[]
+.Request: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt/par/http-request.adoc[]
+.Response:
+include::{snippets}/sdjwt/par/http-response.adoc[]
+
+==== Authorization (eID)
+
+===== Communication between client (wallet) and eID client
+ifdef::backend-html5[]
+// use Unicode emoji for html only
+:warning-caption: pass:[<span style="font-size: 2.0em;">&#9888;&#65039;</span>]
+endif::[]
+WARNING: This is a request to the eID client, e.g. AusweisApp. The port is 24727 by default, so replace the port if you use a different one.
+
+.Call with curl:
+include::{snippets}/sdjwt/authorize/curl-request.adoc[]
+.Request:
+include::{snippets}/sdjwt/authorize/http-request.adoc[]
+.Response:
+include::{snippets}/sdjwt/authorize/http-response.adoc[]
+
+===== Communication between eID client and pid issuer
+
+This communication takes place between the wallet's request to the eID client and before its response to the wallet (see above).
+
+. SAML request
+
+.Call with curl:
+include::saml-request/curl-request.adoc[]
+.Request:
+include::saml-request/http-request.adoc[]
+.Response:
+include::saml-request/http-response.adoc[]
+
+[start=2]
+. SAML response
+
+.Call with curl:
+include::saml-response/curl-request.adoc[]
+.Request:
+include::saml-response/http-request.adoc[]
+.Response:
+include::saml-response/http-response.adoc[]
+
+==== Authorization (finalization)
+.Call with curl:
+include::{snippets}/sdjwt/finish-authorization/curl-request.adoc[]
+.Request:
+include::{snippets}/sdjwt/finish-authorization/http-request.adoc[]
+.Response:
+include::{snippets}/sdjwt/finish-authorization/http-response.adoc[]
+
+==== Token exchange
+.Call with curl: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt/token/curl-request.adoc[]
+.Request: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt/token/http-request.adoc[]
+.Response:
+include::{snippets}/sdjwt/token/http-response.adoc[]
+
+
+=== Re-Issuance (refresh token exchange)
+
+==== Challenge
+.Call with curl:
+include::{snippets}/sdjwt-refresh/challenge/curl-request.adoc[]
+.Request:
+include::{snippets}/sdjwt-refresh/challenge/http-request.adoc[]
+.Response:
+include::{snippets}/sdjwt-refresh/challenge/http-response.adoc[]
+
+==== Refresh Token Initialization
+.Call with curl: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt-refresh/token-refresh-init/curl-request.adoc[]
+.Request: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt-refresh/token-refresh-init/http-request.adoc[]
+.Response:
+include::{snippets}/sdjwt-refresh/token-refresh-init/http-response.adoc[]
+
+==== Refresh Token
+.Call with curl: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt-refresh/token-refresh/curl-request.adoc[]
+.Request: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt-refresh/token-refresh/http-request.adoc[]
+.Response:
+include::{snippets}/sdjwt-refresh/token-refresh/http-response.adoc[]
+
+
+== Issuance
+
+=== Nonce
+.Call with curl:
+include::{snippets}/sdjwt/nonce/curl-request.adoc[]
+.Request:
+include::{snippets}/sdjwt/nonce/http-request.adoc[]
+.Response:
+include::{snippets}/sdjwt/nonce/http-response.adoc[]
+
+
+=== SD-JWT VC issuance V1
+
+==== Single
+
+// Variant C1 with jwt proof, sdjwt
+===== Credential with jwt proof
+.Call with curl: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt/credential/curl-request.adoc[]
+.Request: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt/credential/http-request.adoc[]
+.Response:
+include::{snippets}/sdjwt/credential/http-response.adoc[]
+
+// Variant C1 with key attestation proof, sdjwt
+===== Credential with key attestation proof
+.Call with curl: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt-key-attestation/credential/curl-request.adoc[]
+.Request: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt-key-attestation/credential/http-request.adoc[]
+.Response:
+include::{snippets}/sdjwt-key-attestation/credential/http-response.adoc[]
+
+==== Batch
+
+// Variant C1 with jwt proof, sdjwt, batch issuance
+===== Credential with jwt proof
+.Call with curl: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt-batch/credential/curl-request.adoc[]
+.Request: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt-batch/credential/http-request.adoc[]
+.Response:
+include::{snippets}/sdjwt-batch/credential/http-response.adoc[]
+
+// Variant C1 with key attestation proof, sdjwt, batch issuance
+===== Credential with key attestation proof
+.Call with curl: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt-batch-key-attestation/credential/curl-request.adoc[]
+.Request: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt-batch-key-attestation/credential/http-request.adoc[]
+.Response:
+include::{snippets}/sdjwt-batch-key-attestation/credential/http-response.adoc[]
+
+=== SD-JWT VC issuance V2
+
+==== Single
+
+// Variant C1 with jwt proof, sdjwt
+===== Credential with jwt proof
+.Call with curl: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt2/credential/curl-request.adoc[]
+.Request: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt2/credential/http-request.adoc[]
+.Response:
+include::{snippets}/sdjwt2/credential/http-response.adoc[]
+
+// Variant C1 with key attestation proof, sdjwt
+===== Credential with key attestation proof
+.Call with curl: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt2-key-attestation/credential/curl-request.adoc[]
+.Request: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt2-key-attestation/credential/http-request.adoc[]
+.Response:
+include::{snippets}/sdjwt2-key-attestation/credential/http-response.adoc[]
+
+==== Batch
+
+// Variant C1 with jwt proof, sdjwt, batch issuance
+===== Credential with jwt proof
+.Call with curl: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt2-batch/credential/curl-request.adoc[]
+.Request: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt2-batch/credential/http-request.adoc[]
+.Response:
+include::{snippets}/sdjwt2-batch/credential/http-response.adoc[]
+
+// Variant C1 with key attestation proof, sdjwt, batch issuance
+===== Credential with key attestation proof
+.Call with curl: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt2-batch-key-attestation/credential/curl-request.adoc[]
+.Request: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt2-batch-key-attestation/credential/http-request.adoc[]
+.Response:
+include::{snippets}/sdjwt2-batch-key-attestation/credential/http-response.adoc[]
+
+
+=== SD-JWT VC issuance V3 Beta
+
+==== Single
+
+// Variant C1 with jwt proof, sdjwt
+===== Credential with jwt proof
+.Call with curl: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt3/credential/curl-request.adoc[]
+.Request: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt3/credential/http-request.adoc[]
+.Response:
+include::{snippets}/sdjwt3/credential/http-response.adoc[]
+
+// Variant C1 with key attestation proof, sdjwt
+===== Credential with key attestation proof
+.Call with curl: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt3-key-attestation/credential/curl-request.adoc[]
+.Request: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt3-key-attestation/credential/http-request.adoc[]
+.Response:
+include::{snippets}/sdjwt3-key-attestation/credential/http-response.adoc[]
+
+==== Batch
+
+// Variant C1 with jwt proof, sdjwt, batch issuance
+===== Credential with jwt proof
+.Call with curl: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt3-batch/credential/curl-request.adoc[]
+.Request: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt3-batch/credential/http-request.adoc[]
+.Response:
+include::{snippets}/sdjwt3-batch/credential/http-response.adoc[]
+
+// Variant C1 with key attestation proof, sdjwt, batch issuance
+===== Credential with key attestation proof
+.Call with curl: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt3-batch-key-attestation/credential/curl-request.adoc[]
+.Request: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt3-batch-key-attestation/credential/http-request.adoc[]
+.Response:
+include::{snippets}/sdjwt3-batch-key-attestation/credential/http-response.adoc[]
+
+
+=== MSO mdoc issuance V1
+
+==== Single
+
+// Variant C1 with jwt proof, mdoc
+===== Credential with jwt proof
+.Call with curl: footnote:fn-duplicate-headers[]
+include::{snippets}/mdoc/credential/curl-request.adoc[]
+.Request: footnote:fn-duplicate-headers[]
+include::{snippets}/mdoc/credential/http-request.adoc[]
+.Response:
+include::{snippets}/mdoc/credential/http-response.adoc[]
+
+// Variant C1 with key attestation proof, mdoc
+===== Credential with key attestation proof
+.Call with curl: footnote:fn-duplicate-headers[]
+include::{snippets}/mdoc-key-attestation/credential/curl-request.adoc[]
+.Request: footnote:fn-duplicate-headers[]
+include::{snippets}/mdoc-key-attestation/credential/http-request.adoc[]
+.Response:
+include::{snippets}/mdoc-key-attestation/credential/http-response.adoc[]
+
+==== Batch
+
+// Variant C1 with jwt proof, mdoc, batch issuance
+===== Credential with jwt proof
+.Call with curl: footnote:fn-duplicate-headers[]
+include::{snippets}/mdoc-batch/credential/curl-request.adoc[]
+.Request: footnote:fn-duplicate-headers[]
+include::{snippets}/mdoc-batch/credential/http-request.adoc[]
+.Response:
+include::{snippets}/mdoc-batch/credential/http-response.adoc[]
+
+// Variant C1 with key attestation proof, mdoc, batch issuance
+===== Credential with key attestation proof
+.Call with curl: footnote:fn-duplicate-headers[]
+include::{snippets}/mdoc-batch-key-attestation/credential/curl-request.adoc[]
+.Request: footnote:fn-duplicate-headers[]
+include::{snippets}/mdoc-batch-key-attestation/credential/http-request.adoc[]
+.Response:
+include::{snippets}/mdoc-batch-key-attestation/credential/http-response.adoc[]
+
+=== MSO mdoc issuance V2
+
+==== Single
+
+// Variant C1 with jwt proof, mdoc
+===== Credential with jwt proof
+.Call with curl: footnote:fn-duplicate-headers[]
+include::{snippets}/mdoc2/credential/curl-request.adoc[]
+.Request: footnote:fn-duplicate-headers[]
+include::{snippets}/mdoc2/credential/http-request.adoc[]
+.Response:
+include::{snippets}/mdoc2/credential/http-response.adoc[]
+
+// Variant C1 with key attestation proof, mdoc
+===== Credential with key attestation proof
+.Call with curl: footnote:fn-duplicate-headers[]
+include::{snippets}/mdoc2-key-attestation/credential/curl-request.adoc[]
+.Request: footnote:fn-duplicate-headers[]
+include::{snippets}/mdoc2-key-attestation/credential/http-request.adoc[]
+.Response:
+include::{snippets}/mdoc2-key-attestation/credential/http-response.adoc[]
+
+==== Batch
+
+// Variant C1 with jwt proof, mdoc, batch issuance
+===== Credential with jwt proof
+.Call with curl: footnote:fn-duplicate-headers[]
+include::{snippets}/mdoc2-batch/credential/curl-request.adoc[]
+.Request: footnote:fn-duplicate-headers[]
+include::{snippets}/mdoc2-batch/credential/http-request.adoc[]
+.Response:
+include::{snippets}/mdoc2-batch/credential/http-response.adoc[]
+
+// Variant C1 with key attestation proof, mdoc, batch issuance
+===== Credential with key attestation proof
+.Call with curl: footnote:fn-duplicate-headers[]
+include::{snippets}/mdoc2-batch-key-attestation/credential/curl-request.adoc[]
+.Request: footnote:fn-duplicate-headers[]
+include::{snippets}/mdoc2-batch-key-attestation/credential/http-request.adoc[]
+.Response:
+include::{snippets}/mdoc2-batch-key-attestation/credential/http-response.adoc[]
+
+
+=== MSO mdoc issuance V3 Beta
+
+==== Single
+
+// Variant C1 with jwt proof, mdoc
+===== Credential with jwt proof
+.Call with curl: footnote:fn-duplicate-headers[]
+include::{snippets}/mdoc3/credential/curl-request.adoc[]
+.Request: footnote:fn-duplicate-headers[]
+include::{snippets}/mdoc3/credential/http-request.adoc[]
+.Response:
+include::{snippets}/mdoc3/credential/http-response.adoc[]
+
+// Variant C1 with key attestation proof, mdoc
+===== Credential with key attestation proof
+.Call with curl: footnote:fn-duplicate-headers[]
+include::{snippets}/mdoc3-key-attestation/credential/curl-request.adoc[]
+.Request: footnote:fn-duplicate-headers[]
+include::{snippets}/mdoc3-key-attestation/credential/http-request.adoc[]
+.Response:
+include::{snippets}/mdoc3-key-attestation/credential/http-response.adoc[]
+
+==== Batch
+
+// Variant C1 with jwt proof, mdoc, batch issuance
+===== Credential with jwt proof
+.Call with curl: footnote:fn-duplicate-headers[]
+include::{snippets}/mdoc3-batch/credential/curl-request.adoc[]
+.Request: footnote:fn-duplicate-headers[]
+include::{snippets}/mdoc3-batch/credential/http-request.adoc[]
+.Response:
+include::{snippets}/mdoc3-batch/credential/http-response.adoc[]
+
+// Variant C1 with key attestation proof, mdoc, batch issuance
+===== Credential with key attestation proof
+.Call with curl: footnote:fn-duplicate-headers[]
+include::{snippets}/mdoc3-batch-key-attestation/credential/curl-request.adoc[]
+.Request: footnote:fn-duplicate-headers[]
+include::{snippets}/mdoc3-batch-key-attestation/credential/http-request.adoc[]
+.Response:
+include::{snippets}/mdoc2-batch-key-attestation/credential/http-response.adoc[]
+
+
+=== Request encryption
+
+ifdef::backend-html5[]
+// use Unicode emoji for html only
+:warning-caption: pass:[<span style="font-size: 2.0em;">&#9888;&#65039;</span>]
+endif::[]
+NOTE: For credential request encryption the public key (JWK) used for key agreement to encrypt the request has to be obtained from the credential issuer metadata
+
+
+==== Credential issuer Metadata
+.Call with curl:
+include::{snippets}/sdjwt-enc/issuer-metadata/curl-request.adoc[]
+.Request:
+include::{snippets}/sdjwt-enc/issuer-metadata/http-request.adoc[]
+.Response:
+include::{snippets}/sdjwt-enc/issuer-metadata/http-response.adoc[]
+
+==== Credential
+.Call with curl: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt-enc/credential/curl-request.adoc[]
+.Request: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt-enc/credential/http-request.adoc[]
+.Response:
+include::{snippets}/sdjwt-enc/credential/http-response.adoc[]
+
+=== Request response encryption
+
+ifdef::backend-html5[]
+// use Unicode emoji for html only
+:warning-caption: pass:[<span style="font-size: 2.0em;">&#9888;&#65039;</span>]
+endif::[]
+NOTE: For credential request encryption the public key (JWK) used for key agreement to encrypt the request has to be obtained from the credential issuer metadata
+
+
+==== Credential issuer Metadata
+.Call with curl:
+include::{snippets}/sdjwt-full-enc/issuer-metadata/curl-request.adoc[]
+.Request:
+include::{snippets}/sdjwt-full-enc/issuer-metadata/http-request.adoc[]
+.Response:
+include::{snippets}/sdjwt-full-enc/issuer-metadata/http-response.adoc[]
+
+==== Credential
+.Call with curl: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt-full-enc/credential/curl-request.adoc[]
+.Request: footnote:fn-duplicate-headers[]
+include::{snippets}/sdjwt-full-enc/credential/http-request.adoc[]
+.Response:
+include::{snippets}/sdjwt-full-enc/credential/http-response.adoc[]
+
+== Health
+
+.Call with curl:
+include::{snippets}/health/curl-request.adoc[]
+.Request:
+include::{snippets}/health/http-request.adoc[]
+.Response:
+include::{snippets}/health/http-response.adoc[]

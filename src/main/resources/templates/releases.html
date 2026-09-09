@@ -1,0 +1,496 @@
+<!--
+
+    Copyright 2024-2026 Bundesdruckerei GmbH
+    For the license see the accompanying file LICENSE.MD.
+
+-->
+<!DOCTYPE html>
+<html th:replace="~{layout :: main(~{::title}, ~{::#content})}" xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>PID-Provider</title>
+</head>
+<body>
+<main>
+    <div id="content" class="container mt-2" style="max-width: 40rem;">
+
+        <h1>PID-Provider</h1>
+
+        <p class="lead">
+            Release notes
+        </p>
+
+        <div style="float:right;text-align:right;padding-top:12px">September 02, 2026</div>
+        <h2>1.34.0</h2>
+        <ul>
+            <li>Validates certificate chains according to BSI TR-02103</li>
+            <li>Updates transformation of country codes</li>
+            <li>
+                Adjusts PID in credential configuration id <code>pid-mso-mdoc_3-beta</code>
+                <ul>
+                    <li>Removes <code>place_of_birth.no_place_info</code> and <code>expiry_date</code></li>
+                    <li>Adds <code>raw_eid_birth_date</code> with partially unknown birthdate</li>
+                    <li>Updates <code>birth_date</code> to correspond to ISO 8601 (partially unknown birthdates get set to the last day of month / last month of year)</li>
+                </ul>
+            </li>
+            <li>
+                Adjusts PID in credential configuration id <code>pid-sd-jwt_3-beta</code>
+                <ul>
+                    <li>Removes <code>place_of_birth.no_place_info</code> and <code>date_of_expiry</code></li>
+                    <li>Adds <code>raw_eid_birth_date</code> with partially unknown birthdate</li>
+                    <li>Updates <code>birthdate</code> to correspond to ISO 8601 (partially unknown birthdates get set to the last day of month / last month of year)</li>
+                </ul>
+            </li>
+            <li>
+                Chain Revocation
+                <ul>
+                    <li>Adds foundational support for revoking PMTs and PID Credentials upon Wallet Unit (Instance) revocation</li>
+                    <li>Adds foundational support for synchronizing monitored Wallet Provider Status Lists</li>
+                    <li>Verifies synchronized (fetched) Wallet Provider Status List Tokens</li>
+                </ul>
+            </li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">August 19, 2026</div>
+        <h2>1.33.0</h2>
+        <ul>
+            <li>
+                Updates credential configurations
+                <ul>
+                    <li>Introduces <code>pid-sd-jwt_3-beta</code> and <code>pid-mso-mdoc_3-beta</code></li>
+                    <li>Finalizes <code>pid-sd-jwt_2</code> and <code>pid-mso-mdoc_2</code> by removing the -beta suffix</li>
+                    <li>Deprecates <code>pid-sd-jwt</code> and <code>pid-mso-mdoc</code></li>
+                </ul>
+            </li>
+            <li>Provides an optional challenge endpoint for Client Attestation PoP</li>
+            <li>Manages the lifecycle of PID Credentials in relation to the associated PID Master Token (PMT; Seed Credential)</li>
+            <li>Switches the trust anchor for signing the PID credentials in all public test environments (including Sandbox) to:
+                <a href="https://www1.d-trust.net/cgi-bin/Deutschland_PID-Signer_Test_CA_1-26-1_2026.crt"
+                   target="_blank" rel="noopener">https://www1.d-trust.net/cgi-bin/Deutschland_PID-Signer_Test_CA_1-26-1_2026.crt</a>
+            </li>
+            <li>Switches the trust anchor for signing the status list tokens in all public test environments (including Sandbox) to:
+                <a href="https://www1.d-trust.net/cgi-bin/Deutschland_PID-Status-List-Signer_Test_CA_1-26-2_2026.crt"
+                   target="_blank" rel="noopener">https://www1.d-trust.net/cgi-bin/Deutschland_PID-Status-List-Signer_Test_CA_1-26-2_2026.crt</a>
+            </li>
+            <li>Publishes the trust anchor for status list tokens on the documentation landing page</li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">August 05, 2026</div>
+        <h2>1.32.0</h2>
+        <ul>
+            <li>Adds optional response encryption for credential requests</li>
+            <li>Changes the credential request encryption method from <code>A128GCM</code> to <code>A256GCM</code></li>
+            <li>Makes DPoP Key Attestation mandatory</li>
+            <li>Reads and stores the Status List reference from the Client Attestation (Wallet Instance Attestation), if present</li>
+            <li>Fixes CWT Status List encoding according to the
+                <a href="https://www.ietf.org/archive/id/draft-ietf-oauth-status-list-21.html" target="_blank" rel="noopener">Token Status List (draft-ietf-oauth-status-list-21)</a>
+            </li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">July 22, 2026</div>
+        <h2>1.31.0</h2>
+        <ul>
+            <li>Removes the UI based PID revocation (introduced in 1.6.0)</li>
+            <li>Validates refresh token (PID Master Token) revocation status on access token issuance with <code>grant_type refresh_token</code></li>
+            <li>Tightens certificate chain validation on wallet and Client Attestation validation
+                <ul>
+                    <li>Rejects certificate chains that contain a trust anchor</li>
+                    <li>Rejects self-signed certificates on real data environments</li>
+                </ul>
+            </li>
+            <li>Expects DPoP Key Attestation in JWT payload instead of JWS header</li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">July 08, 2026</div>
+        <h2>1.30.0</h2>
+        <ul>
+            <li>Registers PID Master Token lifecycle on refresh token issuance</li>
+            <li>Adds activation/deprecation date for the <a href="./credential-configuration-changelog">credential configuration changelog</a></li>
+            <li>Uses access certificate from ecosystem for signed metadata</li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">June 25, 2026</div>
+        <h2>1.29.0</h2>
+        <ul>
+            <li>Adds optional request encryption for credential request</li>
+            <li>Supports several trust anchors for Client Attestation and Key Attestation</li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">June 10, 2026</div>
+        <h2>1.28.0</h2>
+        <ul>
+            <li>Returns credential display metadata in specified order for <code>pid-sd-jwt_2-beta</code> and <code>pid-mso-mdoc_2-beta</code></li>
+            <li>Adds parental nodes for <code>adress</code> and <code>age_equal_or_over</code> to credential metadata for <code>pid-sd-jwt_2-beta</code></li>
+            <li>Provides the access certificate used to sign the credential metadata for download at the home page</li>
+            <li>Adds sections in documentation: <a href="credential-claims">PID-Provider PID Credentials</a> and <a href="credential-configuration-ids">PID Credential Configuration Lifecycle</a></li>
+            <li>Refactors authorization session handling, any existing session will be invalidated</li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">May 27, 2026</div>
+        <h2>1.27.0</h2>
+        <ul>
+            <li>Removes support for the <code>proof</code> parameter, which is no longer included in the <a href="https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html#name-credential-request" target="_blank" rel="noopener">OpenID4VCI 1.0 credential request</a></li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">May 20, 2026</div>
+        <h2>1.26.1</h2>
+        <ul>
+            <li>Fixes regression in <code>DPoP-Nonce</code> introduced in release-1.26.0</li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">May 13, 2026</div>
+        <h2>1.26.0</h2>
+        <ul>
+            <li>Adds internal improvements</li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">April 29, 2026</div>
+        <h2>1.25.0</h2>
+        <ul>
+            <li>Provides lifetime parameters for refresh token at token endpoint response</li>
+            <li>Adds evaluation against the issuance policy during token issuance with <code>grant_type</code> <code>refresh_token</code></li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">April 16, 2026</div>
+        <h2>1.24.0</h2>
+        <ul>
+            <li>Adds evaluation against the issuance policy during eID authentication</li>
+            <li>
+                Adjusts PID in credential configuration id <code>pid-mso-mdoc_2-beta</code>
+                <ul>
+                    <li>Changes <code>expiry_date</code> from <code>timestamp</code> to type <code>full-date</code></li>
+                    <li>Removes <code>issuance_date</code></li>
+                    <li>
+                        Sets <code>validFrom</code>, <code>signed</code> and <code>validUntil</code> to 00:00 in the Berlin time zone
+                        and represent in the UTC time zone, i.e. with suffix Z <code>2003-12-12T23:00:00Z</code>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Adjusts PID in credential configuration id <code>pid-sd-jwt_2-beta</code>
+                <ul>
+                    <li>Adds <code>date_of_expiry</code> as type string with format <code>YYYY-MM-DD</code></li>
+                    <li>Adds <code>nbf</code></li>
+                    <li>Removes <code>iat</code></li>
+                    <li>
+                        Sets <code>nbf</code> and <code>exp</code> to 00:00 in the Berlin time zone
+                        and represent in the UTC time zone, i.e. <code>1071270000</code>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">April 01, 2026</div>
+        <h2>1.23.0</h2>
+        <ul>
+            <li>
+                Replaces the access token to be
+                <a href="https://datatracker.ietf.org/doc/html/rfc9068" target="_blank" rel="noopener">RFC 9068</a>
+                compliant JWT with seed credential reference
+            </li>
+            <li>Replaces the refresh token to be self-contained including the seed credential</li>
+            <li>Introduces a <a href="./credential-configuration-changelog">changelog</a> of PID credential configurations</li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">March 18, 2026</div>
+        <h2>1.22.0</h2>
+        <ul>
+            <li>
+                Adjusts PID in beta credential configuration ids
+                <ul>
+                    <li>Supports <code>also_known_as</code> and <code>academic_title</code> for <code>pid-mso-mdoc_2-beta</code></li>
+                    <li>Supports <code>also_known_as</code> and <code>title</code> for <code>pid-sd-jwt_2-beta</code></li>
+                </ul>
+            </li>
+            <li>Removes trust anchor from Status List token certificate chain in x5c header at JWT or CWT</li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">March 04, 2026</div>
+        <h2>1.21.0</h2>
+        <ul>
+            <li>Introduces the new credential configuration id <code>pid-sd-jwt_2-beta</code></li>
+            <li>
+                Adjusts PID in beta credential configuration ids
+                <ul>
+                    <li>Supports partially unknown <code>birth_date</code></li>
+                    <li>Updates to the uniform representation of <code>birth_name</code></li>
+                    <li>Updates to the uniform representation of <code>place_of_birth</code> with <code>no_place_info</code> flag</li>
+                </ul>
+            </li>
+            <li>Supports redirection URIs as described in
+                <a href="https://datatracker.ietf.org/doc/html/rfc8252#section-7)"
+                   target="_blank" rel="noopener">RFC8252</a></li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">February 18, 2026</div>
+        <h2>1.20.0</h2>
+        <ul>
+            <li>Moves key encryption key to a key management system</li>
+            <li>Populates <code>credential_metadata</code> inside the issuer metadata</li>
+            <li>Introduces the new credential configuration id <code>pid-mso-mdoc_2-beta</code> to support the German namespace <code>eu.europa.ec.eudi.pid.de.1</code></li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">February 04, 2026</div>
+        <h2>1.19.0</h2>
+        <ul>
+            <li>Stores personal eID data as encrypted and signed JWT</li>
+            <li>Improves internal handling of blocked eIDs</li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">January 21, 2026</div>
+        <h2>1.18.0</h2>
+        <ul>
+            <li>Adds <a href="/health" target="_blank" rel="noopener">/health</a> endpoint for external health check</li>
+            <li>Adjusts values for <code>source_document_type</code> in PID</li>
+            <li>Removes <code>age_in_years</code> and <code>age_birth_year</code> from PID</li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">January 08, 2026</div>
+        <h2>1.17.1</h2>
+        <ul>
+            <li>Sets <code>ValidityInfo</code> attributes <code>validFrom</code> and <code>signed</code> in MSO-mDoc to same value</li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">January 06, 2026</div>
+        <h2>1.17.0</h2>
+        <ul>
+            <li>Adjusts <code>vct</code> value for SD-JWT</li>
+            <li>Rounds timestamps for <code>iat</code> and <code>exp</code> in SD-JWT</li>
+            <li>Rounds timestamps for <code>ValidityInfo</code> attributes <code>validFrom</code> and <code>validUntil</code> in MSO-mDoc</li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">December 15, 2025</div>
+        <h2>1.16.1</h2>
+        <ul>
+            <li>Adds missing parameters <code>client_attestation_signing_alg_values_supported</code> and
+                <code>client_attestation_pop_signing_alg_values_supported</code>
+                for Client Attestation to the OAuth authorization server metadata</li>
+            <li>Fixes intermittent "Invalid code verifier" errors in PKCE verification</li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">December 10, 2025</div>
+        <h2>1.16.0</h2>
+        <ul>
+            <li>Removes validation of the <code>iss</code> claim in the Client Attestation JWT</li>
+            <li>Adds Cache-Control and Pragma headers to authorization server responses</li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">November 24, 2025</div>
+        <h2>1.15.0</h2>
+        <ul>
+            <li>Changes URLs and certificates for root and issuance</li>
+            <li>Adjusts <code>birth_place</code> and <code>nationality</code> in PID according to
+                <a href="https://github.com/eu-digital-identity-wallet/eudi-doc-attestation-rulebooks-catalog/blob/main/rulebooks/pid/pid-rulebook.md#315-attribute-place_of_birth"
+                   target="_blank" rel="noopener">PID-Rulebook 1.3</a>
+            </li>
+            <li>Removes trust anchor from SD-JWT VC and MSO mdoc certificate chain in header</li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">November 15, 2025</div>
+        <h2>1.14.3</h2>
+        <ul>
+            <li>Removes undefined parameters <code>vct</code> and <code>doctype</code> from credential request body</li>
+            <li>Fixes structure of <code>credentials</code> in credential response</li>
+            <li>Changes the Key Attestation validation to comparison of JWK thumbprint instead of whole JWK</li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">November 12, 2025</div>
+        <h2>1.14.1</h2>
+        <ul>
+            <li>Removes the check whether Client Attestation key and DPoP key are the same</li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">November 10, 2025</div>
+        <h2>1.14.0</h2>
+        <ul>
+            <li>Makes DPoP key-attestation optional</li>
+            <li>Adds the server identity to the authorization request</li>
+            <li>Renders mDoc birth_date as DATE data type</li>
+            <li>Increases length of random secure string to 44 for AuthorizationCode, AccessToken, Redirect Uri,
+                DPoPNonce,
+                CNonce and IssuerState
+            </li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">October 29, 2025</div>
+        <h2>1.13.0</h2>
+        <ul>
+            <li>Fixes faulty check if expiration time claim in the Client Attestation JWT is too far in the future</li>
+            <li>Removes check for expiration time claim in the Client Attestation PoP JWT</li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">October 14, 2025</div>
+        <h2>1.12.0</h2>
+        <ul>
+            <li>Adds a restriction to ensure that number of attested keys does not exceed the maximum batch size</li>
+            <li>Fixes the metadata response for jwt accept header</li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">September 30, 2025</div>
+        <h2>1.11.0</h2>
+        <ul>
+            <li>Supports longer-lived Key Attestations for DPoP</li>
+            <li>Provides signed issuer metadata</li>
+            <li>Introduces the <code>source_document_type</code> field to the PID</li>
+            <li>Renames the Key Attestation type to <code>key-attestation+jwt</code></li>
+            <li>Adds a credential error response: <code>unknown_credential_configuration</code></li>
+            <li>Includes examples of eID requests and responses in the documentation</li>
+            <li>Updates issuer certificate used to sign the credentials in the documentation</li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">September 16, 2025</div>
+        <h2>1.10.0</h2>
+        <ul>
+            <li>Adds rejection for eIDs without full birthdate</li>
+            <li>Fixes serialization of attested keys as JSON object</li>
+            <li>Restructures the api-documentation to improve the navigation</li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">September 03, 2025</div>
+        <h2>1.9.0</h2>
+        <ul>
+            <li>Adds Key Attestation validation for DPoP JWTs at the token endpoint</li>
+            <li>Adjusts metadata for client authentication method</li>
+            <li>Removes flow-variant (c1) from paths and metadata</li>
+            <li>Includes release dates in the release notes</li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">August 20, 2025</div>
+        <h2>1.8.0</h2>
+        <ul>
+            <li>Removes all flows except C'</li>
+            <li>Sets <code>DE</code> as default nationality if it's not present in eID-data</li>
+            <li>Adds support for <a
+                href="https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0-15.html#name-attestation-proof-type"
+                rel="noopener" target="_blank">Key Attestation</a> as proof type
+            </li>
+            <li>Updates <a
+                href="https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0-15.html#name-wallet-attestations-in-jwt-"
+                rel="noopener" target="_blank">Wallet Attestation</a> to use <code>OAuth-Client-Attestation</code> and
+                <code>OAuth-Client-Attestation-PoP</code>
+                headers and removes support for <code>client_assertion</code> request parameter
+            </li>
+            <li>Adds decoy elements in nationalities for SD-JWT</li>
+            <li>Makes SD-JWT credential object claims selectively disclosable</li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">August 11, 2025</div>
+        <h2>1.7.0</h2>
+        <ul>
+            <li>Changes credential format identifier from <code>vc+sd-jwt</code> to <code>dc+sd-jwt</code></li>
+            <li>Adds an option to use <code>credential_configuration_id</code> in the credential request</li>
+            <li>Adds <a
+                href="https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0-15.html#name-nonce-endpoint"
+                rel="noopener" target="_blank">nonce endpoint</a> and removes <code>c_nonce</code> and
+                <code>c_nonce_expires</code>
+                from credential and token responses
+            </li>
+            <li>Adds wallet attestations as defined in <a
+                href="https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0-15.html#name-wallet-attestations-in-jwt-"
+                rel="noopener" target="_blank">annex E of OpenID4VCI (draft 15)</a>, but still using
+                client_assertion and client_assertion_type request parameters
+            </li>
+            <li>Enables non-breaking extensibility for PAR, token requests and credential requests (fixes #375)</li>
+            <li>Changes credential response to always return an array</li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">December 16, 2024</div>
+        <h2>1.6.0</h2>
+        <ul>
+            <li>Provides <code>batch_credential_issuance.batch_size</code> information in Credential Issuer Metadata
+            </li>
+            <li>Publishes Verifiable Credential Type metadata under /credentials/pid/1.0 and
+                adapts <code>vct</code> claim in SD-JWT format PIDs accordingly
+            </li>
+            <li>Implements basic PID revocation on user request:
+                <ul>
+                    <li>Provides a revocation web app via <code>/revocation</code>
+                    </li>
+                    <li>Provides a Status List Service according to <a
+                        href="https://www.ietf.org/archive/id/draft-ietf-oauth-status-list-05.html" rel="noopener"
+                        target="_blank">Token Status List (draft-ietf-oauth-status-list-05)</a> via /status
+                    </li>
+                    <li>Integrates revocation status retrieval information according to <a
+                        href="https://www.ietf.org/archive/id/draft-ietf-oauth-status-list-05.html" rel="noopener"
+                        target="_blank">Token Status List (draft-ietf-oauth-status-list-05)</a> into PIDs in both,
+                        SD-JWT and MSO mdoc formats
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">October 08, 2024</div>
+        <h2>1.5.0</h2>
+        <ul>
+            <li>Adapts flow variant B' according to <a
+                href="https://gitlab.opencode.de/bmi/eudi-wallet/eidas-2.0-architekturkonzept/-/blob/v2.2/architecture-proposal.md?ref_type=tags"
+                rel="noopener" target="_blank">Architecture Proposal for the German eIDAS Implementation &ndash;
+                Release V2.2</a>:
+                <ul>
+                    <li>Accept grant type <code>urn:ietf:params:oauth:grant-type:seed_credential</code> for token
+                        request
+                    </li>
+                    <li>Issue seed credential and initialize PIN retry counter on credential instead of finish
+                        authorization
+                        request
+                    </li>
+                    <li>Expect and verify PIN and device key signed nonces as JWTs for seed and final credential
+                        issuance
+                    </li>
+                    <li>Rename nonce to session endpoint and provide its URL in credential issuer metadata</li>
+                </ul>
+            </li>
+            <li>Adapts both, flow variant B and flow variant B' according to <a
+                href="https://gitlab.opencode.de/bmi/eudi-wallet/eidas-2.0-architekturkonzept/-/blob/v2.2/architecture-proposal.md?ref_type=tags"
+                rel="noopener" target="_blank">Architecture Proposal for the German eIDAS Implementation &ndash;
+                Release V2.2</a>:
+                <ul>
+                    <li>Use credential format <code>mso_mdoc_authenticated_channel</code> for authenticated channel
+                        flows
+                    </li>
+                    <li>Pass in relying party's ephemeral public key through JSON attribute <code>verifier_pub</code> in
+                        credential request
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">August 20, 2024</div>
+        <h2>1.4.0</h2>
+        <ul>
+            <li>Adds flow variant B' <strong>with</strong> PIN management.</li>
+            <li>Adds flow variant C''.</li>
+            <li>Disables Client Attestation for all flow variants, except flow variant B'.</li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">August 05, 2024</div>
+        <h2>1.3.0</h2>
+        <ul>
+            <li>Adds flow variant B' with seed credential, but still <strong>without</strong> PIN management.</li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">July 23, 2024</div>
+        <h2>1.2.0</h2>
+        <ul>
+            <li>Adds flow variant B with HMAC authenticated SD-JWT and MSO mdoc credentials.</li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">July 15, 2024</div>
+        <h2>1.1.0</h2>
+        <ul>
+            <li>Adds flow variant C' with seed credential.</li>
+            <li>Adds batch issuance on credential endpoint to flow variant C and C'.</li>
+            <li>Disables Client Attestation for flow variant C.</li>
+            <li>Requires DPOP for flow variants C and C'.</li>
+            <li>Supports credential format MSO mdoc for flow variants C and C'.</li>
+        </ul>
+
+        <div style="float:right;text-align:right;padding-top:12px">July 15, 2024</div>
+        <h2>1.0.0</h2>
+        <ul>
+            <li>Published Increment 1 of the PID Issuer for SPRIND Funke EUDI Wallet Prototype.</li>
+            <li>A detailed feature description can be found on the flow variant and the credential format pages.</li>
+        </ul>
+    </div>
+</main>
+</body>
+</html>

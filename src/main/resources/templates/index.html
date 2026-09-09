@@ -1,0 +1,65 @@
+<!--
+
+    Copyright 2024-2026 Bundesdruckerei GmbH
+    For the license see the accompanying file LICENSE.MD.
+
+-->
+<!DOCTYPE html>
+<html th:replace="~{layout :: main(~{::title}, ~{::#content})}" xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>PID-Provider</title>
+    <link rel="icon" th:href="@{favicon.png}" type="image/png"/>
+</head>
+<body>
+<main>
+    <div id="content" class="container mt-2" style="max-width: 40rem;">
+
+        <h1>PID-Provider</h1>
+        <p>The EUDI PID-Provider is a trustworthy service in the EUDI-Wallet ecosystem that verifies the identity of a user and issues a PID (person identification data).</p>
+        <p>This data is sourced by the german eID System.</p>
+        <p>The PID is issued in an EUDI-Wallet, where the user is able to provide/present it to relying parties to identify himself.</p>
+        <p>The relying party can verify the status of the PID against a Status-List provided by the PID-Provider.</p>
+
+        <br>
+
+        <h2 id="basic-functions-heading">Basic Functions of the PID-Provider</h2>
+        <dl aria-labelledby="basic-functions-heading">
+          <dt>Verification and Authorization:</dt>
+          <dd>The eID-Functionality of german ID-Cards is used to verify the user, authorize him to issue a PID and therefore providing the necessary personal data on a high trust level (LoA High).</dd>
+          <dt>Issuance:</dt>
+          <dd>The PID-Provider issues (includes signing) the PID by using the verified eID-Data. The PID is provided to the users EUDI-Wallet that initiated the issuance.</dd>
+          <dt>Status-Information:</dt>
+          <dd>The PID-Provider provides the validity-status of a PID in a list. The relying party can fetch this information and verify the validity of the PID.</dd>
+        </dl>
+
+        <br>
+
+        <h2>PID issuance flow</h2>
+        <p>
+            The detailed <a href="./issuance-flow">PID issuance flow</a>.
+        </p>
+
+        <br>
+
+        <h2>Certificates</h2>
+        <p>
+            Download the
+            <a th:href="${pidSignerCertificate}" download target="_blank" rel="noopener">PID-Signer CA Certificate</a>
+            used to sign the credentials.
+        </p>
+        <p>
+            Download the
+            <a th:href="${statusListSignerCertificate}" download target="_blank" rel="noopener">PID-Status-List-Signer CA Certificate</a>
+            used to sign the Token Status list.
+        </p>
+        <p>
+            Download the
+            <a href="./certificates/access.crt" download target="_blank">Access Certificate</a>
+            used to sign the credential metadata.
+        </p>
+
+        <br>
+    </div>
+</main>
+</body>
+</html>

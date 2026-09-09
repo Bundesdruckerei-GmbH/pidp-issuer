@@ -1,0 +1,9 @@
+#
+# Copyright 2025 Bundesdruckerei GmbH
+# For the license see the accompanying file LICENSE.MD.
+#
+
+* text=auto eol=lf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.ps1 text eol=crlf

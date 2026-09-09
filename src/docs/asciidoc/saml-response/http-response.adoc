@@ -1,0 +1,11 @@
+////
+  // Copyright 2024-2026 Bundesdruckerei GmbH
+  // For the license see the accompanying file LICENSE.MD.
+////
+
+[source,http,options="nowrap"]
+----
+HTTP/1.1 303 See Other
+date: Tue, 23 Sep 2025 14:23:14 GMT
+location: http://localhost:8084/finish-authorization?issuer_state=curGx8qFEivvrjA4tMM3pd
+----

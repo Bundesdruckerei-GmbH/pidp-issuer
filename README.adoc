@@ -1,0 +1,258 @@
+////
+  // Copyright 2024-2026 Bundesdruckerei GmbH
+  // For the license see the accompanying file LICENSE.MD.
+////
+
+= PIDP-Issuer
+
+== Structure
+
+The PIDP-Issuer contains three main directories:
+
+* `src` - the Java code of the project
+* `docker` - the docker stuff of the project
+* `helm` - the values and secrets for the deployment
+
+=== Prerequisites
+
+. Java 25
+. https://www.docker.com/[Docker] and docker compose
+. https://www.postgresql.org/[PostgreSQL] version 15.19 or higher
+. A key management system like https://openbao.org/[OpenBao]
+. The status list service
+. The revocation service
+
+[NOTE]
+====
+If you use Docker Desktop on Windows, you have to sign in to Docker Desktop and then Navigate to Settings -> Resources -> Network -> Enable host networking. Then Select apply and restart. For further details see here: https://docs.docker.com/engine/network/drivers/host/#docker-desktop
+====
+
+
+=== Run
+
+We use maven as our build system. To build the code and run it use the following command:
+[source,bash]
+----
+$ ./mvnw spring-boot:run
+----
+
+Or simply start the application with your IDE. The needed docker containers for database etc. will be automatically started.
+
+[TIP]
+.Issues using docker on macOS
+====
+On macOS with Docker Desktop, there can be problems running docker commands. When you receive errors starting with `ERROR: failed to authorize: failed to fetch oauth token: Post…`, try to deactivate BuildKit by adding
+
+[source,json]
+----
+"features": {
+    "buildkit": false
+}
+----
+
+to the Docker Daemon configuration or by setting:
+
+[source,bash]
+----
+export DOCKER_BUILDKIT=0
+export COMPOSE_DOCKER_CLI_BUILD=0
+----
+====
+
+[TIP]
+.Issues running on macOS
+====
+When you get to an error such as `usr/local/bin/docker-entrypoint.sh: /docker-entrypoint-initdb.d/init-user-db.sh: /bin/bash: bad interpreter: Permission denied`, this is most probably related to wrong file permissions. This can be fixed with
+
+[source,bash]
+----
+$ chmod +x db/docker-entrypoint-initdb.d/init-user-db.sh
+----
+
+A partially initialized, corrupt database can be removed by using
+
+[source,bash]
+----
+$ docker compose down --volumes --remove-orphans
+----
+
+After this the issuer can be started with the "play" buttons from within the IDE or by
+
+[source,bash]
+----
+$ ./mvnw spring-boot:run
+----
+====
+
+The PID-Issuer is available on port 8084 after startup.
+
+== Testing
+
+We use different components in testing the PID-Issuer. We want to have:
+
+* unit-tests with JUnit
+* integration-tests using spring-boot-tests
+* architecture tests using archunit and spring-boot-modulith
+* xray to trace our requirements
+
+=== Testing the core
+
+The core components should be tested by plain junit-tests. Use mockito if needed.
+
+=== Integration testing
+
+There are tow different types of integration tests:
+
+* MockMVC based tests in the `integration` package
+* Tests with a real http client based in the `remote` and `restdoc` package
+
+The integration tests serve two different goals: they should of course guarantee the correctness of our implementation, but they also document the rest interface with Spring REST Docs.
+
+==== Test setup
+
+We use RequestBuilders for convenience. There is one builder per request type. They have all the correct parameter per request as "with" methods, e.g.: `AuthorizationRequestBuilder#withClientId(String)` and also generic methods to set parameters as needed.
+
+Use the `withDocumentation(String)` method to create snippets for the documentation.
+
+The URLs and other setting for the tests are set by the property `TEST_CONFIG`, which defaults to `plain`.
+
+|===
+|Value |Description |Explanation
+
+|`plain` | Test against a local instance | manually start via your IDE or via `./mvnw spring-boot:run`
+
+|`dev` |Test against the dev stage | manually start `docker compose up`
+
+|`test` |Test against the test stage | manually start `docker compose up`
+
+|===
+
+
+=== Spring REST Docs tests
+https://docs.spring.io/spring-restdocs/docs/current/reference/htmlsingle/[Spring REST Docs] tests serve the purpose of supporting the documentation of a REST API by sending example requests to a running application instance through unit tests. Those requests and the correlated responses are then recorded and transformed to AsciiDoc snippets. The latter can than get integrated into an AsciiDoc based documentation with both, generated and custom authored parts.
+
+==== Running
+Spring REST Docs tests are derived from `RestDocTest`. These tests are also run with
+
+[source,bash]
+----
+$ ./mvnw spring-boot:run
+$ ./mvnw verify -Dtest.groups=restdocEid
+----
+
+==== Documentation snippets
+After running the tests, the AsciiDoc snippets for requests and responses can be found in `${project.build.directory}/generated-snippets`. In their structure, the snippets follow the different issuance variants, verifiable credential formats and protocol endpoints. The following directory listing gives an example:
+
+[source,bash]
+----
+├── mdoc
+│   ├── authorize
+│   │   ├── curl-request.adoc
+│   │   ├── http-request.adoc
+│   │   ├── http-response.adoc
+│   │   ├── httpie-request.adoc
+│   │   ├── request-body.adoc
+│   │   └── response-body.adoc
+│   ├── credential
+│   │   ├ …
+├── mdoc-batch
+│   ├── authorize
+│   │   ├── curl-request.adoc
+│   │   ├── http-request.adoc
+│   │   ├── http-response.adoc
+│   │   ├── httpie-request.adoc
+│   │   ├── request-body.adoc
+│   │   └── response-body.adoc
+│   ├── credential
+│   │   ├ …
+----
+
+==== Snippet based documentation
+The snippets can be included in AsciiDoc based documentation, then. This documentation can be found in link:./src/docs/asciidoc/manual.adoc[manual.adoc].
+
+After running the restdocEid tests from the previous chapter you can build the documentation with
+
+[source,bash]
+----
+$ ./mvnw package
+----
+
+, an HTML version of the documentation is then available in `${project.build.directory}/generated-docs/manual.html`.
+
+== Keystores
+
+=== Sign credential metadata
+
+When any client sending a HTTP GET request to the credential metadata endpoint with Accept Header containing the content type: **application/jwt**
+then credential metadata endpoint replies with Status Code 200 and a signed JSON Web Token (JWT) containing the Credential Issuer Metadata in its payload.
+
+An ECC key pair is used for signing. The application finds the necessary data for the key store (path, alias, password) in the following properties:
+
+[source]
+----
+pidi.metadata.signer-path=<path of keystore>
+pidi.metadata.signer-password=<keystore and key password>
+pidi.metadata.signer-alias=<key pair alias>
+----
+
+An example command for creating the key store and key pair is:
+----
+ALIAS=metadata-test
+KEYSTORE_NAME=metadata/metadata-test
+PASSWORD=metadata-test
+HOSTNAME=localhost
+
+keytool -genkeypair -v -alias $ALIAS -keystore $KEYSTORE_NAME.p12 -storetype pkcs12 -keyalg EC -groupname secp256r1 -validity 3650 -storepass $PASSWORD -ext KeyUsage:critical=digitalSignature -ext BasicConstraints:critical=ca:false -dname "CN=$HOSTNAME"
+----
+After generating the keystore with the above command you have to go to the Sandbox Registrar Portal: https://sandbox.eudi-wallet.org/ and create a new access certificate. Enter the DNS name and they public key from the keystore (use keystore explorer, right-click on the entry->View Details->Public Key Details->PEM).
+Then save the generated certificate and import it into the keystore using keystore explorer (right-click on a blank spot in keystore explorer->Import Trusted Certificate). Save the keystore and update the entry in the values.
+
+=== Generate WIA and WTE certificate
+
+First create a EC-256 private key
+
+[source]
+----
+openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:prime256v1 -out src/test/resources/pidp-client-key-attestation-wia-wte-test-privkey.pem
+----
+
+Then generate the WIA and WTE certificates
+
+[source]
+----
+openssl req -new -key src/test/resources/pidp-client-key-attestation-wia-wte-test-privkey.pem -x509 -days 3650 -out src/main/resources/certificates/pidp-client-attestation-wia-test.crt -subj "/CN=pidp-client-attestation-wia-test/O=Bundesdruckerei GmbH/C=DE" -addext "keyUsage = digitalSignature" -addext "basicConstraints = critical,CA:FALSE"
+openssl req -new -key src/test/resources/pidp-client-key-attestation-wia-wte-test-privkey.pem -x509 -days 3650 -out src/main/resources/certificates/pidp-key-attestation-wte-test.crt -subj "/CN=pidp-key-attestation-wte-test/O=Bundesdruckerei GmbH/C=DE" -addext "keyUsage = digitalSignature" -addext "basicConstraints = critical,CA:FALSE"
+----
+
+To create a full chain use the following commands
+
+First generate the root CA and Sub CA certificates
+[source]
+----
+openssl req -new -key src/test/resources/pidp-client-key-attestation-wia-wte-test-privkey.pem -x509 -days 3652 -out src/main/resources/certificates/pidp-client-key-attestation-wia-wte-test-rootca.crt -subj '/CN=pidp-client-attestation-wia-test Root CA/C=DE/O=Bundesdruckerei GmbH'
+openssl req -new -key src/test/resources/pidp-client-key-attestation-wia-wte-test-privkey.pem -x509 -days 3651 -out src/test/resources/certificates/pidp-client-key-attestation-wia-wte-test-subca.crt -subj '/CN=pidp-client-attestation-wia-test Sub CA/C=DE/O=Bundesdruckerei GmbH' -CA src/main/resources/certificates/pidp-client-key-attestation-wia-wte-test-rootca.crt -CAkey src/test/resources/pidp-client-key-attestation-wia-wte-test-privkey.pem
+----
+
+Then generate the WIA and WTE certificates from the Sub CA
+
+[source]
+----
+openssl req -new -key src/test/resources/pidp-client-key-attestation-wia-wte-test-privkey.pem -x509 -days 3650 -out src/main/resources/certificates/pidp-client-attestation-wia-test-fullchain.crt -subj "/CN=pidp-client-attestation-wia-test-fullchain/O=Bundesdruckerei GmbH/C=DE" -addext "keyUsage = digitalSignature" -addext "basicConstraints = critical,CA:FALSE" -CA src/test/resources/certificates/pidp-client-key-attestation-wia-wte-test-subca.crt -CAkey src/test/resources/pidp-client-key-attestation-wia-wte-test-privkey.pem
+openssl req -new -key src/test/resources/pidp-client-key-attestation-wia-wte-test-privkey.pem -x509 -days 3650 -out src/main/resources/certificates/pidp-key-attestation-wte-test-fullchain.crt -subj "/CN=pidp-key-attestation-wte-test-fullchain/O=Bundesdruckerei GmbH/C=DE" -addext "keyUsage = digitalSignature" -addext "basicConstraints = critical,CA:FALSE" -CA src/test/resources/certificates/pidp-client-key-attestation-wia-wte-test-subca.crt -CAkey src/test/resources/pidp-client-key-attestation-wia-wte-test-privkey.pem
+----
+
+And finally combine them to the full chain
+[source]
+----
+cat src/test/resources/certificates/pidp-client-key-attestation-wia-wte-test-subca.crt src/main/resources/certificates/pidp-client-key-attestation-wia-wte-test-rootca.crt >> src/main/resources/certificates/pidp-client-attestation-wia-test-fullchain.crt
+cat src/test/resources/certificates/pidp-client-key-attestation-wia-wte-test-subca.crt src/main/resources/certificates/pidp-client-key-attestation-wia-wte-test-rootca.crt >> src/main/resources/certificates/pidp-key-attestation-wte-test-fullchain.crt
+----
+
+[source]
+----
+openssl req -new -key ./pidp-client-key-attestation-wia-wte-test-privkey.pem -x509 -days 3652 -out ./pidp-test-root.crt -subj '/CN=pidp-client-attestation-wia-test Root CA/
+C=DE/O=Bundesdruckerei GmbH' -addext "basicConstraints = critical,CA:TRUE,pathlen:1" -addext "keyUsage = critical,keyCertSign"
+openssl req -new -key ./pidp-client-key-attestation-wia-wte-test-privkey.pem -x509 -days 3650 -out ./cert.crt -subj '/CN=Ungültige Signatur/
+C=DE/O=Bundesdruckerei GmbH' -addext "basicConstraints = critical,CA:FALSE" -addext "keyUsage = critical,keyCertSign"
+----
+

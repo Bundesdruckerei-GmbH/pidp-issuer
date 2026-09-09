@@ -1,0 +1,5 @@
+Contact: security@bdr.de
+Expires: 2029-04-01T00:01:00.000Z
+Encryption: https://www.bundesdruckerei.de/pub_files/pgp-key.txt
+Preferred-Languages: en, de
+Policy: https://www.bundesdruckerei.de/en/vulnerability-policy

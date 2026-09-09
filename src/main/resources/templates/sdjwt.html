@@ -1,0 +1,68 @@
+<!--
+
+    Copyright 2024-2026 Bundesdruckerei GmbH
+    For the license see the accompanying file LICENSE.MD.
+
+-->
+<!DOCTYPE html>
+<html th:replace="~{layout :: main(~{::title}, ~{::#content})}" xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Credential format - SD-JWT</title>
+</head>
+<body>
+<main>
+    <div id="content" class="container mt-2" style="max-width: 40rem;">
+        <h1>Credential format - SD-JWT</h1>
+        <ul>
+            <li>The PID is issued in the format defined in the ARF Annex 6, with the changes from <a
+                    href="https://github.com/eu-digital-identity-wallet/eudi-doc-architecture-and-reference-framework/pull/160/files" rel="noopener" target="_blank">ARF
+                PR 160</a> applied.
+            </li>
+            <li><a href="https://datatracker.ietf.org/doc/draft-ietf-oauth-sd-jwt-vc/11/" rel="noopener" target="_blank">SD-JWT VC Draft 11</a> is used:
+            </li>
+            <li>Use of a test root certificate used for credential signing. The root certificate is available on the <a
+                    href="./">main</a> page.
+                The chain is written to the x5c header.
+            </li>
+            <li>The signing key is also made available at the jwt-vc-issuer well-known endpoint for web based key
+                resolution. Transfer of the jwt-vc-issuer metadata is secured by a browser validatable TLS certificate
+                used for displaying this technical details page as well.
+            </li>
+            <li><a href="https://datatracker.ietf.org/doc/rfc9901/" rel="noopener" target="_blank">SD-JWT Final (RFC 9901)</a> is used:
+            </li>
+            <li> The compact serialization is used.</li>
+            <li> Recursive disclosures are used.</li>
+            <li> The leaf elements in the JSON tree are made selectively disclosable.</li>
+            <li> Array element disclosures are used.</li>
+        </ul>
+
+        <h2>Create a sample PID</h2>
+        <p class="mb-2">To create a sample SD-JWT PID perform the following steps:</p>
+        <ol>
+            <li>Open the <a href="./docs/manual.html">manual</a> and select:
+                <span class="fst-italic">Issuance</span> &rarr;
+                <span class="fst-italic">SD-JWT VC issuance ...</span> &rarr;
+                <span class="fst-italic">Single</span>
+            </li>
+            <li>Extract the base64 encoded credential from the response</li>
+            <li>Decode the credential in a SD-JWT debugger</li>
+        </ol>
+
+        <div class="note note-info d-flex mt-3">
+            <div class="me-2 fw-bold" aria-hidden="true">ⓘ</div>
+            <div>
+                <p class="fw-bold mb-1">Info</p>
+                <p class="mb-1">
+                    The <a href="./docs/manual.html#_credential_with_jwt_proof_3">manual</a>
+                    shows raw SD-JWT VCs in compact serialization form.
+                </p>
+                <p class="mb-1">
+                    These raw SD-JWT VCs are generated during local testing, and therefore the issuer is
+                    set to <span class="font-monospace">localhost</span> instead of the actual production URL.
+                </p>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,10 @@
+////
+  // Copyright 2024-2026 Bundesdruckerei GmbH
+  // For the license see the accompanying file LICENSE.MD.
+////
+
+[source,http,options="nowrap"]
+----
+GET /authorize?client_id=152e7566-b336-11f0-9e91-00155d50d2a8&request_uri=urn:ietf:params:oauth:request_uri:HMiFh5xiC72IDmeFEUYerH HTTP/1.1
+Host: localhost:8084
+----

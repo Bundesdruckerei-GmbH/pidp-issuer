@@ -1,0 +1,64 @@
+<!--
+
+    Copyright 2024-2026 Bundesdruckerei GmbH
+    For the license see the accompanying file LICENSE.MD.
+
+-->
+<!DOCTYPE html>
+<html th:replace="~{layout :: main(~{::title}, ~{::#content})}" xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Credential format - MSO-MDOC</title>
+</head>
+<body>
+<main>
+    <div id="content" class="container mt-2" style="max-width: 40rem;">
+        <h1>Credential format - MSO-MDOC</h1>
+        <ul>
+            <li>The PID is issued in the format defined in the ARF Annex 6, with the changes from <a
+                    href="https://github.com/eu-digital-identity-wallet/eudi-doc-architecture-and-reference-framework/pull/160/files" rel="noopener" target="_blank">ARF
+                PR 160</a> applied.
+            </li>
+            <li>The credential is returned as a IssuerSigned structure as described in ISO 18013-5 (see chapter
+                8.3.2.1.2.2):
+            </li>
+            <li>Use of a test root certificate used for credential signing. The root certificate is available on the <a
+                    href="./">main</a> page.
+                The chain is written to the x5c element (id "33") of the unprotected header of the IssuerAuth structure
+                with certificates encoded in DER format.
+            </li>
+            <li>The signing key is also made available at the jwt-vc-issuer well-known endpoint for web based key
+                resolution. Transfer of the jwt-vc-issuer metadata is secured by a browser validatable TLS certificate
+                used for displaying this technical details page as well.
+            </li>
+        </ul>
+
+        <h2>Create a sample PID</h2>
+        <p class="mb-2">To create a sample MSO-MDOC PID perform the following steps:</p>
+        <ol>
+            <li>Open the <a href="./docs/manual.html">manual</a> and select:
+                <span class="fst-italic">Issuance</span> &rarr;
+                <span class="fst-italic">MSO mdoc issuance</span> &rarr;
+                <span class="fst-italic">Single</span>
+            </li>
+            <li>Extract the base64 encoded credential from the response</li>
+            <li>Decode the credential in an MSO-MDOC debugger</li>
+        </ol>
+
+        <div class="note note-info d-flex mt-3">
+            <div class="me-2 fw-bold" aria-hidden="true">ⓘ</div>
+            <div>
+                <p class="fw-bold mb-1">Info</p>
+                <p class="mb-1">
+                    The <a href="./docs/manual.html#_credential_with_jwt_proof_7">manual</a>
+                    shows raw credentials (Base64URL-encoded as defined for the credential parameter in OID4VCI).
+                </p>
+                <p class="mb-1">
+                    These raw credentials are generated during local testing, and therefore the issuer is
+                    set to <span class="font-monospace">localhost</span> instead of the actual production URL.
+                </p>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

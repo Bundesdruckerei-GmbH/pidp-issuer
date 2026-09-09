@@ -1,0 +1,50 @@
+<!--
+
+    Copyright 2024-2026 Bundesdruckerei GmbH
+    For the license see the accompanying file LICENSE.MD.
+
+-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>components</title>
+</head>
+<body>
+    <!--
+        A headline with badge, activation date and expiration date
+
+        @param title            the title of the headline as String
+        @param status           the status of the credential configuration as CredentialConfigurationStatus
+        @param activationDate   the date of activation as LocalDate
+        @param expirationDate   the date of planned deactivation as LocalDate
+    -->
+    <div th:fragment="headline-with-badge-and-dates(title, status, activationDate, expirationDate)" class="headline-with-badge-and-dates">
+        <div th:switch="${status}" th:with="CredentialConfigurationStatus = ${T(de.bdr.pidp.issuer.doc.in.CredentialConfigurationStatus)}"  class="headline">
+            <span th:case="${CredentialConfigurationStatus.ACTIVE}" th:text="${status.displayString}" class="badge badge-success" aria-hidden="true"></span>
+            <span th:case="${CredentialConfigurationStatus.DEPRECATED}" th:text="${status.displayString}" class="badge badge-warning" aria-hidden="true"></span>
+            <span th:case="${CredentialConfigurationStatus.REMOVED}" th:text="${status.displayString}" class="badge badge-danger" aria-hidden="true"></span>
+            <span th:case="${CredentialConfigurationStatus.INACTIVE}" th:text="${status.displayString}" class="badge badge-danger" aria-hidden="true"></span>
+            <span th:case="*" class="badge badge-danger" aria-hidden="true">Unknown</span>
+
+            <h3 th:text="${title}" th:attr="aria-label=|${status.displayString} configuration ${title}|"/>
+        </div>
+
+        <div class="dates border-bottom border-secondary mb-2">
+            <div>
+                <span th:if="${activationDate != null}">
+                    active since:
+                    <span th:text="${#temporals.format(activationDate, 'MMMM dd, yyyy')}"></span>
+                </span>
+            </div>
+            <div>
+                <span th:if="${expirationDate != null}">
+                    deactivation:
+                    <span th:text="${#temporals.format(expirationDate, 'MMMM dd, yyyy')}"></span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
